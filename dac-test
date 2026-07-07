@@ -1,0 +1,644 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Joséphine Nav — Orientation territoriale DAC 95 Sud</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500&family=Fraunces:wght@600&display=swap" rel="stylesheet" />
+  <style>
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+    :root {
+      --blue-50: #E6F1FB; --blue-100: #B5D4F4; --blue-400: #378ADD;
+      --blue-600: #185FA5; --blue-800: #0C447C; --blue-900: #042C53;
+      --gray-50: #F8F9FA; --gray-100: #F1F3F5; --gray-200: #E9ECEF;
+      --gray-400: #ADB5BD; --gray-600: #6C757D; --gray-900: #212529;
+      --red-50: #FCEBEB; --red-200: #F09595; --red-800: #791F1F; --red-dot: #E24B4A;
+      --green-50: #EBF7EF; --green-200: #95D4A8; --green-800: #1A6B35;
+      --radius-sm: 6px; --radius-md: 10px; --radius-lg: 14px;
+      --shadow-sm: 0 1px 3px rgba(0,0,0,0.08);
+    }
+    body { font-family: 'DM Sans', sans-serif; background: #F0F4F8; color: var(--gray-900); min-height: 100vh; display: flex; flex-direction: column; }
+
+    /* HEADER */
+    header { background: white; border-bottom: 1px solid var(--gray-200); padding: 0 1.5rem; height: 58px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 100; box-shadow: var(--shadow-sm); }
+    .logo { display: flex; align-items: center; gap: 10px; text-decoration: none; }
+    .logo-mark { width: 34px; height: 34px; background: var(--blue-600); border-radius: 8px; display: flex; align-items: center; justify-content: center; }
+    .logo-mark svg { width: 20px; height: 20px; fill: white; }
+    .logo-text { font-family: 'Fraunces', serif; font-size: 16px; font-weight: 600; color: var(--blue-800); }
+    .logo-sub { font-size: 10px; color: var(--gray-600); display: block; }
+    .header-badge { font-size: 11px; color: var(--blue-800); background: var(--blue-50); padding: 4px 10px; border-radius: 20px; font-weight: 500; border: 1px solid var(--blue-100); white-space: nowrap; }
+
+    /* MAIN */
+    main { flex: 1; max-width: 700px; width: 100%; margin: 0 auto; padding: 2rem 1.25rem 4rem; }
+    .page-header { margin-bottom: 1.75rem; }
+    .page-header h1 { font-family: 'Fraunces', serif; font-size: 26px; font-weight: 600; color: var(--blue-900); margin-bottom: 6px; }
+    .page-header p { font-size: 13.5px; color: var(--gray-600); line-height: 1.6; }
+
+    /* STATUS BAR */
+    .status-bar { display: flex; align-items: center; gap: 8px; font-size: 11px; color: var(--gray-600); background: var(--green-50); border: 1px solid var(--green-200); border-radius: var(--radius-sm); padding: 6px 12px; margin-bottom: 1.25rem; }
+    .status-dot { width: 7px; height: 7px; border-radius: 50%; background: #2ECC71; flex-shrink: 0; animation: pulse 2s infinite; }
+    @keyframes pulse { 0%,100%{opacity:1} 50%{opacity:.4} }
+    .status-bar.loading-db { background: var(--blue-50); border-color: var(--blue-100); color: var(--blue-800); }
+    .status-bar.loading-db .status-dot { background: var(--blue-400); }
+
+    /* SEARCH CARD */
+    .search-card { background: white; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); padding: 1.5rem; margin-bottom: 1.25rem; box-shadow: var(--shadow-sm); }
+    .search-wrap { display: flex; gap: 8px; align-items: flex-end; margin-bottom: 1.25rem; }
+    textarea#query { flex: 1; border: 1.5px solid var(--gray-200); border-radius: var(--radius-md); padding: 10px 14px; font-family: 'DM Sans', sans-serif; font-size: 14px; color: var(--gray-900); resize: none; line-height: 1.55; min-height: 80px; transition: border-color .15s; background: var(--gray-50); }
+    textarea#query:focus { outline: none; border-color: var(--blue-400); background: white; }
+    textarea#query::placeholder { color: var(--gray-400); }
+    .btn-primary { background: var(--blue-600); color: white; border: none; border-radius: var(--radius-md); padding: 10px 22px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; white-space: nowrap; transition: background .15s, transform .1s; align-self: flex-end; }
+    .btn-primary:hover { background: var(--blue-800); }
+    .btn-primary:active { transform: scale(.98); }
+    .btn-primary:disabled { opacity: .5; cursor: not-allowed; transform: none; }
+
+    /* EXAMPLES */
+    .examples-label { font-size: 11px; font-weight: 500; color: var(--gray-400); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+    .examples { display: flex; flex-direction: column; gap: 6px; }
+    .example-btn { text-align: left; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 9px 13px; font-size: 12.5px; color: var(--gray-600); cursor: pointer; font-family: 'DM Sans', sans-serif; line-height: 1.5; transition: all .15s; }
+    .example-btn:hover { border-color: var(--blue-400); color: var(--gray-900); background: var(--blue-50); }
+
+    /* LOADING */
+    .loading { display: none; text-align: center; padding: 3rem 1rem; background: white; border-radius: var(--radius-lg); border: 1px solid var(--gray-200); box-shadow: var(--shadow-sm); }
+    .spinner { width: 32px; height: 32px; border: 2.5px solid var(--blue-100); border-top-color: var(--blue-600); border-radius: 50%; animation: spin .75s linear infinite; margin: 0 auto 1rem; }
+    @keyframes spin { to { transform: rotate(360deg); } }
+    .loading p { font-size: 13px; color: var(--gray-600); }
+    .loading small { font-size: 11px; color: var(--gray-400); display: block; margin-top: 4px; }
+
+    /* ERROR */
+    .error-box { display: none; background: var(--red-50); border: 1px solid var(--red-200); border-radius: var(--radius-md); padding: 1rem 1.25rem; font-size: 13px; color: var(--red-800); margin-bottom: 1rem; }
+
+    /* RESULT */
+    .result { display: none; }
+    .result-topbar { display: flex; align-items: center; justify-content: space-between; margin-bottom: 1rem; }
+    .result-topbar .badge { font-size: 11px; font-weight: 500; color: var(--blue-800); background: var(--blue-50); padding: 4px 10px; border-radius: 20px; border: 1px solid var(--blue-100); }
+    .btn-reset { background: transparent; border: 1px solid var(--gray-200); border-radius: var(--radius-sm); padding: 5px 12px; font-size: 12px; color: var(--gray-600); cursor: pointer; font-family: 'DM Sans', sans-serif; transition: all .15s; }
+    .btn-reset:hover { background: var(--gray-100); }
+
+    /* SITUATION */
+    .situation-card { background: var(--blue-50); border: 1px solid var(--blue-100); border-radius: var(--radius-lg); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .situation-card .slabel { font-size: 10px; font-weight: 500; letter-spacing: .08em; color: var(--blue-600); text-transform: uppercase; margin-bottom: 6px; }
+    .situation-card p { font-size: 13.5px; color: var(--blue-900); line-height: 1.65; }
+
+    /* SECTIONS */
+    .result-section { background: white; border: 1px solid var(--gray-200); border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; box-shadow: var(--shadow-sm); }
+    .section-header { font-size: 11px; font-weight: 500; color: var(--gray-600); letter-spacing: .06em; text-transform: uppercase; padding-bottom: 10px; border-bottom: 1px solid var(--gray-200); margin-bottom: 1rem; display: flex; align-items: center; gap: 6px; }
+
+    /* STEPS */
+    .steps { display: flex; flex-direction: column; gap: 12px; }
+    .step { display: flex; gap: 12px; align-items: flex-start; }
+    .step-num { width: 22px; height: 22px; min-width: 22px; border-radius: 50%; background: var(--blue-600); color: white; font-size: 11px; font-weight: 500; display: flex; align-items: center; justify-content: center; margin-top: 1px; }
+    .step-actor { font-size: 13.5px; font-weight: 500; color: var(--gray-900); margin-bottom: 2px; }
+    .step-action { font-size: 12.5px; color: var(--gray-600); line-height: 1.55; }
+    .step-etablissement { font-size: 11px; color: var(--blue-600); margin-top: 3px; font-style: italic; }
+
+    /* CONTACTS */
+    .contacts { display: flex; flex-direction: column; }
+    .contact-item { display: flex; justify-content: space-between; align-items: flex-start; gap: 16px; padding: 8px 0; border-bottom: 1px solid var(--gray-100); font-size: 13px; }
+    .contact-item:last-child { border-bottom: none; }
+    .contact-name { font-weight: 500; color: var(--gray-900); }
+    .contact-info { color: var(--gray-600); text-align: right; font-size: 12px; }
+
+    /* AIDANTS */
+    .aidants-section { background: #FFF8E6; border: 1px solid #FFD97A; border-radius: var(--radius-lg); padding: 1.25rem; margin-bottom: 1rem; }
+    .aidants-section .section-header { border-bottom-color: #FFD97A; color: #7A5200; }
+    .aidants-list { display: flex; flex-direction: column; gap: 8px; }
+    .aidant-item { display: flex; gap: 8px; font-size: 13px; color: #4A3200; line-height: 1.55; }
+    .aidant-icon { font-size: 14px; flex-shrink: 0; margin-top: 1px; }
+
+    /* VIGILANCES */
+    .vigilances { display: flex; flex-direction: column; gap: 8px; }
+    .vig-item { display: flex; gap: 10px; align-items: flex-start; font-size: 13px; color: #495057; line-height: 1.55; }
+    .vig-dot { width: 7px; height: 7px; min-width: 7px; border-radius: 50%; background: var(--red-dot); margin-top: 4px; }
+
+    /* APPEL DAC */
+    .dac-cta { background: var(--blue-600); border-radius: var(--radius-lg); padding: 1.25rem 1.5rem; margin-bottom: 1rem; display: flex; align-items: center; justify-content: space-between; gap: 1rem; flex-wrap: wrap; }
+    .dac-cta-text { color: white; }
+    .dac-cta-text strong { font-size: 14px; display: block; margin-bottom: 2px; }
+    .dac-cta-text span { font-size: 12px; opacity: .85; }
+    .dac-cta-btn { background: white; color: var(--blue-800); border: none; border-radius: var(--radius-md); padding: 9px 18px; font-family: 'DM Sans', sans-serif; font-size: 14px; font-weight: 500; cursor: pointer; text-decoration: none; white-space: nowrap; display: inline-block; }
+
+    /* ETABLISSEMENTS MATCHÉS */
+    .etab-matches { background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); padding: 1rem 1.25rem; margin-bottom: 1rem; }
+    .etab-matches .etab-label { font-size: 11px; font-weight: 500; color: var(--gray-400); letter-spacing: .06em; text-transform: uppercase; margin-bottom: 8px; }
+    .etab-list { display: flex; flex-direction: column; gap: 4px; }
+    .etab-item { font-size: 12px; color: var(--gray-600); padding: 4px 0; border-bottom: 1px solid var(--gray-100); }
+    .etab-item:last-child { border-bottom: none; }
+    .etab-item strong { color: var(--gray-900); }
+
+    /* SOURCES */
+    .sources-row { display: flex; gap: 6px; flex-wrap: wrap; padding: 0.75rem 1.25rem; background: var(--gray-50); border: 1px solid var(--gray-200); border-radius: var(--radius-md); margin-bottom: 1rem; }
+    .source-tag { font-size: 11px; color: var(--gray-600); background: white; border: 1px solid var(--gray-200); padding: 3px 9px; border-radius: 20px; }
+
+    /* FOOTER */
+    footer { background: white; border-top: 1px solid var(--gray-200); padding: 1.25rem; text-align: center; }
+    footer p { font-size: 11px; color: var(--gray-400); }
+
+    @media (max-width: 480px) {
+      main { padding: 1.25rem 1rem 3rem; }
+      .page-header h1 { font-size: 22px; }
+      .search-wrap { flex-direction: column; }
+      .btn-primary { width: 100%; text-align: center; }
+      .dac-cta { flex-direction: column; text-align: center; }
+      .contact-item { flex-direction: column; gap: 2px; }
+      .contact-info { text-align: left; }
+    }
+  </style>
+</head>
+<body>
+
+<header>
+  <a href="#" class="logo">
+    <div class="logo-mark">
+      <svg viewBox="0 0 20 20"><path d="M10 2C5.58 2 2 5.58 2 10s3.58 8 8 8 8-3.58 8-8-3.58-8-8-8zm0 3a2 2 0 110 4 2 2 0 010-4zm0 10.5c-2.5 0-4.71-1.28-6-3.22.03-1.99 4-3.08 6-3.08 1.99 0 5.97 1.09 6 3.08-1.29 1.94-3.5 3.22-6 3.22z"/></svg>
+    </div>
+    <div>
+      <span class="logo-text">Joséphine Nav</span>
+      <span class="logo-sub">DAC 95 Sud — Association Joséphine</span>
+    </div>
+  </a>
+  <span class="header-badge">Val-d'Oise · 34 communes</span>
+</header>
+
+<main>
+  <div class="page-header">
+    <h1>Orientation territoriale</h1>
+    <p>Décrivez une situation clinique — l'IA analyse la situation et propose un parcours coordonné : soins, aidants, social.</p>
+  </div>
+
+  <div class="status-bar loading-db" id="status-bar">
+    <div class="status-dot"></div>
+    <span id="status-text">Chargement de la base des établissements du Val-d'Oise...</span>
+  </div>
+
+  <div id="search-panel" style="display:none">
+    <div class="search-card">
+      <div class="search-wrap">
+        <textarea id="query" placeholder="Décrivez la situation : âge, commune, pathologie, situation des aidants, contexte social..." rows="3"></textarea>
+        <button class="btn-primary" id="btn-go" onclick="handleSearch()">Analyser →</button>
+      </div>
+      <div class="examples-label">Situations fréquentes — cliquez pour tester</div>
+      <div class="examples">
+        <button class="example-btn" onclick="fillExample(this)">Monsieur de 72 ans, Alzheimer stade modéré à Cormeilles-en-Parisis. Déambule la nuit, sa fille unique travaille à plein temps et est épuisée. Il refuse tout diagnostic. Quelles options ?</button>
+        <button class="example-btn" onclick="fillExample(this)">Patiente de 68 ans, cancer du pancréas stade terminal à Herblay-sur-Seine. Souhaite mourir à domicile. Mari âgé, peu autonome, pas d'autres proches. Que mettre en place ?</button>
+        <button class="example-btn" onclick="fillExample(this)">Homme de 84 ans à Montmagny, sans médecin traitant depuis 1 an. Vit seul, GIR 5, isolement social important. Pas de famille connue. Comment intervenir ?</button>
+        <button class="example-btn" onclick="fillExample(this)">Femme de 48 ans atteinte de SLA à Argenteuil. Douleurs réfractaires, anxiété sévère. Mari aidant principal, a dû arrêter de travailler. Deux enfants à la maison. Quels acteurs mobiliser ?</button>
+        <button class="example-btn" onclick="fillExample(this)">Retraité de 75 ans à Sannois, troubles du comportement récents, bilan neurologique négatif. Conjoint dépassé. Aucun psychiatre disponible en ville. Que faire en urgence ?</button>
+      </div>
+    </div>
+  </div>
+
+  <div class="loading" id="loading">
+    <div class="spinner"></div>
+    <p>Analyse de la situation en cours...</p>
+    <small id="loading-detail">Croisement avec les établissements du territoire 95 Sud</small>
+  </div>
+
+  <div class="error-box" id="error-box"></div>
+
+  <div class="result" id="result">
+    <div class="result-topbar">
+      <span class="badge">✓ Parcours recommandé</span>
+      <button class="btn-reset" onclick="resetSearch()">← Nouvelle situation</button>
+    </div>
+
+    <div class="situation-card">
+      <div class="slabel">Situation analysée</div>
+      <p id="result-situation"></p>
+    </div>
+
+    <div class="result-section">
+      <div class="section-header">🏥 Parcours de soins recommandé</div>
+      <div class="steps" id="result-steps"></div>
+    </div>
+
+    <div class="aidants-section">
+      <div class="section-header">🤝 Soutien aux aidants</div>
+      <div class="aidants-list" id="result-aidants"></div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-header">🏛️ Aides sociales et administratives</div>
+      <div class="steps" id="result-social"></div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-header">📞 Contacts utiles sur le territoire</div>
+      <div class="contacts" id="result-contacts"></div>
+    </div>
+
+    <div class="result-section">
+      <div class="section-header">⚠️ Points de vigilance</div>
+      <div class="vigilances" id="result-vigilances"></div>
+    </div>
+
+    <div class="etab-matches" id="etab-matches" style="display:none">
+      <div class="etab-label">Établissements identifiés dans la base 95</div>
+      <div class="etab-list" id="etab-list"></div>
+    </div>
+
+    <div class="dac-cta">
+      <div class="dac-cta-text">
+        <strong>📞 Contacter le DAC 95 Sud — Association Joséphine</strong>
+        <span>Pour ouvrir un dossier, obtenir un appui ou valider ce parcours avec une coordinatrice</span>
+      </div>
+      <a href="tel:0134150962" class="dac-cta-btn">01 34 15 09 62</a>
+    </div>
+
+    <div class="sources-row">
+      <span class="source-tag">Base établissements Val-d'Oise (1 400+ structures)</span>
+      <span class="source-tag">Connaissance territoire 95 Sud</span>
+      <span class="source-tag">Réseau Joséphine</span>
+    </div>
+
+    <p style="text-align:center;font-size:11px;color:var(--gray-400);padding:.5rem 0">
+      À valider avec votre coordinatrice — <a href="mailto:contact@dac95sud.fr" style="color:var(--blue-600)">contact@dac95sud.fr</a> · Lun-Ven 9h-18h
+    </p>
+  </div>
+</main>
+
+<footer>
+  <p><strong>Joséphine Nav</strong> — DAC 95 Sud · Association Joséphine · 14 bis Place Charles de Gaulle, 95210 Saint-Gratien</p>
+</footer>
+
+<script>
+// ═══════════════════════════════════════════════════
+// CONFIG — remplacer la clé avant mise en production
+// ═══════════════════════════════════════════════════
+const GROQ_API_KEY = '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';
+const GROQ_MODEL   = 'llama-3.3-70b-versatile'; // modèle rapide et précis
+
+const JSON_URL = 'https://opticarefrance.fr/wp-content/uploads/2026/04/etablissements-sante-95.json';
+
+// ═══════════════════════════════════════════════════
+// BASE ETABLISSEMENTS
+// ═══════════════════════════════════════════════════
+let etablissements = [];
+
+async function loadEtablissements() {
+  setStatus('loading', 'Chargement de la base des établissements du Val-d\'Oise...');
+  try {
+    const r = await fetch(JSON_URL);
+    const raw = await r.json();
+    etablissements = raw.map(e => ({
+      nom: (e[''] || e['__1'] || '').trim(),
+      nomAlt: (e['__1'] || '').trim(),
+      type: (e['__11'] || '').trim(),
+      categorie: (e['__12'] || '').trim(),
+      ville: extractVille(e['__10'] || ''),
+      cp: extractCP(e['__10'] || ''),
+      adresse: buildAdresse(e),
+      statut: (e['__13'] || '').trim()
+    })).filter(e => e.nom);
+    setStatus('ok', `Base chargée — ${etablissements.length} établissements du Val-d'Oise`);
+    document.getElementById('search-panel').style.display = 'block';
+  } catch(err) {
+    setStatus('ok', 'Mode hors-ligne — connaissance territoriale active');
+    document.getElementById('search-panel').style.display = 'block';
+  }
+}
+
+function extractVille(str) {
+  const m = str.match(/\d{5}\s+(.+)/);
+  return m ? m[1].trim() : str.trim();
+}
+function extractCP(str) {
+  const m = str.match(/(\d{5})/);
+  return m ? m[1] : '';
+}
+function buildAdresse(e) {
+  const num = e['__4'] || '';
+  const type = e['__5'] || '';
+  const voie = e['__6'] || '';
+  return [num, type, voie].filter(Boolean).join(' ').trim();
+}
+
+function setStatus(state, msg) {
+  const bar = document.getElementById('status-bar');
+  const txt = document.getElementById('status-text');
+  txt.textContent = msg;
+  if (state === 'ok') {
+    bar.classList.remove('loading-db');
+    bar.querySelector('.status-dot').style.background = '#2ECC71';
+  } else {
+    bar.classList.add('loading-db');
+  }
+}
+
+// ═══════════════════════════════════════════════════
+// RECHERCHE ETABLISSEMENTS PERTINENTS
+// ═══════════════════════════════════════════════════
+const MOTS_CLES_TYPE = {
+  'palliatif|fin de vie|cancer|oncologie': ['Soins palliatifs','Unité de soins palliatifs','Centre de lutte contre le cancer','Hospitalisation à domicile','LISP'],
+  'alzheimer|démence|mémoire|cognitif': ['EHPAD','Unité Alzheimer','Accueil de jour','Unité cognitivo','Centre Médico-Psychologique'],
+  'psychiatr|trouble du comportement|mental|anxiété': ['Centre Médico-Psychologique','Psychiatrie','Appartement Thérapeutique','Centre Postcure'],
+  'handicap|MDPH|autonomie': ['Maison d\'Accueil Spécialisée','Foyer','ESAT','IME','Etablissement et service'],
+  'dom|domicile|SSIAD|soins infirmiers': ['Hospitalisation à domicile','Service de Soins Infirmiers'],
+  'géria|âgé|personne agée|EHPAD': ['EHPAD','Etablissement d\'hébergement','Accueil de jour','Hébergement temporaire'],
+  'SSR|réadaptation|rééducation': ['Soins de Suite','Rééducation'],
+  'urgence|SAU': ['Service d\'Accueil des Urgences','Centre Hospitalier']
+};
+
+function findEtablissements(query, communesMentionnees) {
+  if (!etablissements.length) return [];
+  const q = query.toLowerCase();
+
+  // Déterminer les types recherchés
+  let typesRecherches = [];
+  for (const [pattern, types] of Object.entries(MOTS_CLES_TYPE)) {
+    if (new RegExp(pattern, 'i').test(q)) typesRecherches.push(...types);
+  }
+  if (!typesRecherches.length) typesRecherches = ['Centre Hospitalier', 'EHPAD', 'Centre Médico'];
+
+  // Filtrer par type et proximité géographique
+  const communesLower = communesMentionnees.map(c => c.toLowerCase());
+  const COMMUNES_95_SUD = ['argenteuil','bezons','cormeilles','herblay','montigny','franconville',
+    'ermont','eaubonne','saint-gratien','sannois','soisy','enghien','deuil','montmorency',
+    'saint-brice','montmagny','groslay','andilly','margency','saint-leu','plessis-bouchard',
+    'frépillon','béthemont','beauchamp','moiselles','taverny'];
+
+  return etablissements.filter(e => {
+    const villeLower = e.ville.toLowerCase();
+    const nomLower = (e.nom + ' ' + e.type + ' ' + e.categorie).toLowerCase();
+    const typeMatch = typesRecherches.some(t => nomLower.includes(t.toLowerCase()) || e.type.toLowerCase().includes(t.toLowerCase()));
+    const geoMatch = communesLower.some(c => villeLower.includes(c)) ||
+                     COMMUNES_95_SUD.some(c => villeLower.includes(c));
+    return typeMatch && geoMatch;
+  }).slice(0, 6);
+}
+
+function extractCommunes(query) {
+  const COMMUNES = ['argenteuil','bezons','cormeilles','herblay','montigny','franconville',
+    'ermont','eaubonne','saint-gratien','sannois','soisy','enghien','deuil','montmorency',
+    'saint-brice','montmagny','groslay','andilly','margency','saint-leu','plessis-bouchard',
+    'frépillon','béthemont','beauchamp','moiselles','taverny','cergy'];
+  return COMMUNES.filter(c => query.toLowerCase().includes(c));
+}
+
+// ═══════════════════════════════════════════════════
+// SYSTEM PROMPT
+// ═══════════════════════════════════════════════════
+function buildSystemPrompt(etablissementsContext) {
+  return `Tu es une coordinatrice de parcours expérimentée du DAC 95 Sud - Association Joséphine (14 bis Place Charles de Gaulle, 95210 Saint-Gratien — 01 34 15 09 62 — contact@dac95sud.fr).
+
+Tu analyses des situations cliniques complexes et proposes des parcours coordonnés CONCRETS. Tu penses toujours à trois dimensions simultanément :
+1. LE PATIENT : ses besoins médicaux, son autonomie (GIR), ses souhaits
+2. LES AIDANTS : leur épuisement, leurs besoins de soutien et de répit
+3. LE VOLET SOCIAL : droits, aides financières, démarches administratives
+
+TERRITOIRE : DAC 95 Sud couvre 34 communes du Val-d'Oise : Argenteuil, Bezons, Cormeilles-en-Parisis, Herblay-sur-Seine, Montigny-lès-Cormeilles, Franconville, Ermont, Eaubonne, Saint-Gratien, Sannois, Soisy-sous-Montmorency, Enghien-les-Bains, Deuil-la-Barre, Montmorency, Saint-Brice-sous-Forêt, Montmagny, Groslay, Andilly, Margency, Saint-Leu-la-Forêt, Le Plessis-Bouchard, Frépillon, Béthemont-la-Forêt, Beauchamp, Moiselles, Taverny. Population : 587 000 habitants.
+
+STRUCTURE JOSÉPHINE :
+- DAC 95 Sud : coordination parcours complexes tout public. DACTeam + Santélien. Lun-Ven 9h-18h. TÉL : 01 34 15 09 62
+- CLIC Joséphine : uniquement +60 ans retraités, problématiques sociales/administratives, 11 communes
+- Structure évaluatrice CNAV/MSA : évaluations GIR 5-6, Plan d'Action Personnalisé
+- TOUJOURS recommander d'appeler le DAC au 01 34 15 09 62 comme première étape ou étape clé
+
+ÉLIGIBILITÉ DAC :
+- GIR 5-6 : DAC intervient (complexité mais autonomie préservée)
+- GIR 1-4 : redirection APA (Conseil Départemental 95) + DAC peut accompagner
+
+PARTENAIRES TERRITOIRE 95 SUD :
+Hospitaliers : GHEM Simone Veil Eaubonne (HAD, Gériatrie, Psychiatrie) 01 39 64 61 00 | CH Victor Dupouy Argenteuil 01 34 23 24 25 | HDJ Psy G07 GHEM Deuil-la-Barre
+Équipes mobiles : EMSPT (soins palliatifs) | EMPG (psycho-gériatrique) | EMPSA (psychiatrie sujet âgé) | EMG/EMGE (gériatrique)
+Soins domicile : SSIAD | SAAD locaux | IDEL libérales | HAD GHEM
+Spécialisé : CMP (Centres Médico-Psychologiques) | CRT (Centre Ressources Territorial) | Ernesti (répit aidants) | Réseau SLA
+Administratif : MDPH 95 01 34 25 34 25 | CPAM 95 | APA Conseil Départemental 95 | CCAS communes | SSD
+CPTS : VOC (Ermont/Eaubonne/Sannois) | Plaine d'Oise (Montmagny) | Boucle Sud 95 (Argenteuil/Bezons) | Ouest Parisis (Cormeilles/Herblay)
+Autres : Ligue contre le cancer 95 | PSAD (matériel médical) | Via Trajectoire (EHPAD/SSR) | Ernesti (répit)
+
+DISPOSITIFS CLÉS :
+- FUP (Fiche Urgence Palliative) + SAMU 15 : tout patient en soins palliatifs à domicile
+- ADH : 54h d'aide sur 3 mois post-hospitalisation
+- FNASS : fonds soins palliatifs domicile
+- APA : pour GIR 1-4 (financement aide à domicile)
+- CNAV/MSA : pour GIR 5-6 (Plan d'Action Personnalisé)
+- LISP / HDJ USP : lits et hôpital de jour soins palliatifs
+- Téléassistance : sécurisation domicile isolement
+- PSAD : matériel médical à domicile (lit, déambulateur, concentrateur O2...)
+- Dossier MDPH : PCH (aide humaine), AEEH (enfant), RQTH (travail), orientation
+- Via Trajectoire : demande entrée EHPAD ou SSR
+
+${etablissementsContext ? `ÉTABLISSEMENTS IDENTIFIÉS DANS LA BASE 95 POUR CETTE SITUATION :\n${etablissementsContext}\nTu peux t'appuyer sur ces établissements réels dans tes préconisations.` : ''}
+
+RÈGLES DE RÉPONSE :
+- Chaque step du parcours doit dire QUI fait QUOI précisément (jamais juste "évaluation")
+- Toujours mentionner le DAC 95 Sud (01 34 15 09 62) comme point de contact coordinateur
+- Pour les aidants : toujours proposer au moins 2 solutions concrètes de soutien/répit
+- Pour le social : toujours vérifier APA ou CNAV, droits MDPH si handicap, CCAS pour aides locales
+- Les réponses doivent être stables et cohérentes pour des situations similaires
+- Cite des structures réelles du 95 quand tu les connais
+
+FORMAT : Réponds UNIQUEMENT en JSON valide, sans markdown, sans backticks, sans texte avant ou après :
+{
+  "situation": "Résumé clinique factuel en 2-3 phrases (patient + contexte aidants + enjeu principal)",
+  "steps": [
+    {"actor": "Acteur ou dispositif", "action": "Ce qui est mis en place concrètement"},
+    ...
+  ],
+  "aidants": [
+    "Action concrète de soutien aux aidants 1",
+    "Action concrète de soutien aux aidants 2",
+    ...
+  ],
+  "social": [
+    {"actor": "Dispositif ou structure", "action": "Démarche ou aide à mettre en place"},
+    ...
+  ],
+  "contacts": [
+    {"name": "Structure", "info": "Numéro et/ou rôle"},
+    ...
+  ],
+  "vigilances": ["Point de vigilance 1", ...]
+}
+Maximum : 6 steps, 3 aidants, 3 social, 5 contacts, 4 vigilances.`;
+}
+
+// ═══════════════════════════════════════════════════
+// UI HELPERS
+// ═══════════════════════════════════════════════════
+function fillExample(btn) {
+  document.getElementById('query').value = btn.textContent.trim();
+  document.getElementById('query').focus();
+}
+
+function resetSearch() {
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error-box').style.display = 'none';
+  document.getElementById('search-panel').style.display = 'block';
+  document.getElementById('query').value = '';
+  document.getElementById('query').focus();
+  window.scrollTo({ top: 0, behavior: 'smooth' });
+}
+
+function escHtml(str) {
+  if (!str) return '';
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+// ═══════════════════════════════════════════════════
+// MAIN SEARCH
+// ═══════════════════════════════════════════════════
+async function handleSearch() {
+  const query = document.getElementById('query').value.trim();
+  if (!query) { document.getElementById('query').focus(); return; }
+
+  // Trouver établissements pertinents
+  const communes = extractCommunes(query);
+  const etabMatches = findEtablissements(query, communes);
+  const etabContext = etabMatches.length
+    ? etabMatches.map(e => `- ${e.nom} (${e.type}) — ${e.ville}`).join('\n')
+    : '';
+
+  document.getElementById('search-panel').style.display = 'none';
+  document.getElementById('loading').style.display = 'block';
+  document.getElementById('result').style.display = 'none';
+  document.getElementById('error-box').style.display = 'none';
+  document.getElementById('btn-go').disabled = true;
+
+  if (etabMatches.length) {
+    document.getElementById('loading-detail').textContent =
+      `${etabMatches.length} établissements identifiés dans la base 95 · Analyse en cours...`;
+  }
+
+  try {
+    const resp = await fetch('https://api.groq.com/openai/v1/chat/completions', {
+      method: 'POST',
+      headers: {
+        'Content-Type': 'application/json',
+        'Authorization': `Bearer ${GROQ_API_KEY}`
+      },
+      body: JSON.stringify({
+        model: GROQ_MODEL,
+        temperature: 0.2,
+        max_tokens: 1200,
+        messages: [
+          { role: 'system', content: buildSystemPrompt(etabContext) },
+          { role: 'user', content: `Situation à analyser :\n${query}` }
+        ]
+      })
+    });
+
+    if (!resp.ok) {
+      const err = await resp.json();
+      throw new Error(err.error?.message || 'Erreur API ' + resp.status);
+    }
+
+    const data = await resp.json();
+    const text = data.choices?.[0]?.message?.content || '';
+
+    let parsed;
+    try {
+      const clean = text.replace(/```json|```/g, '').trim();
+      parsed = JSON.parse(clean);
+    } catch(e) {
+      // Tentative de récupération si JSON malformé
+      const match = text.match(/\{[\s\S]*\}/);
+      if (match) parsed = JSON.parse(match[0]);
+      else throw new Error('Réponse non parseable');
+    }
+
+    // Injecter situation
+    document.getElementById('result-situation').textContent = parsed.situation || '';
+
+    // Injecter steps
+    const stepsEl = document.getElementById('result-steps');
+    stepsEl.innerHTML = '';
+    (parsed.steps || []).forEach((s, i) => {
+      const d = document.createElement('div');
+      d.className = 'step';
+      d.innerHTML = `<div class="step-num">${i+1}</div><div>
+        <div class="step-actor">${escHtml(s.actor)}</div>
+        <div class="step-action">${escHtml(s.action)}</div>
+      </div>`;
+      stepsEl.appendChild(d);
+    });
+
+    // Injecter aidants
+    const aidantsEl = document.getElementById('result-aidants');
+    aidantsEl.innerHTML = '';
+    (parsed.aidants || []).forEach(a => {
+      const d = document.createElement('div');
+      d.className = 'aidant-item';
+      d.innerHTML = `<span class="aidant-icon">→</span><span>${escHtml(a)}</span>`;
+      aidantsEl.appendChild(d);
+    });
+
+    // Injecter social
+    const socialEl = document.getElementById('result-social');
+    socialEl.innerHTML = '';
+    (parsed.social || []).forEach((s, i) => {
+      const d = document.createElement('div');
+      d.className = 'step';
+      d.innerHTML = `<div class="step-num" style="background:var(--gray-600)">${i+1}</div><div>
+        <div class="step-actor">${escHtml(s.actor)}</div>
+        <div class="step-action">${escHtml(s.action)}</div>
+      </div>`;
+      socialEl.appendChild(d);
+    });
+
+    // Injecter contacts
+    const contactsEl = document.getElementById('result-contacts');
+    contactsEl.innerHTML = '';
+    (parsed.contacts || []).forEach(c => {
+      const d = document.createElement('div');
+      d.className = 'contact-item';
+      d.innerHTML = `<span class="contact-name">${escHtml(c.name)}</span>
+        <span class="contact-info">${escHtml(c.info)}</span>`;
+      contactsEl.appendChild(d);
+    });
+
+    // Injecter vigilances
+    const vigEl = document.getElementById('result-vigilances');
+    vigEl.innerHTML = '';
+    (parsed.vigilances || []).forEach(v => {
+      const d = document.createElement('div');
+      d.className = 'vig-item';
+      d.innerHTML = `<div class="vig-dot"></div><span>${escHtml(v)}</span>`;
+      vigEl.appendChild(d);
+    });
+
+    // Afficher établissements matchés
+    if (etabMatches.length) {
+      const etabBox = document.getElementById('etab-matches');
+      const etabList = document.getElementById('etab-list');
+      etabList.innerHTML = '';
+      etabMatches.forEach(e => {
+        const d = document.createElement('div');
+        d.className = 'etab-item';
+        d.innerHTML = `<strong>${escHtml(e.nom)}</strong> — ${escHtml(e.type)} · ${escHtml(e.ville)}`;
+        etabList.appendChild(d);
+      });
+      etabBox.style.display = 'block';
+    } else {
+      document.getElementById('etab-matches').style.display = 'none';
+    }
+
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('result').style.display = 'block';
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+
+  } catch(err) {
+    document.getElementById('loading').style.display = 'none';
+    document.getElementById('search-panel').style.display = 'block';
+    const errBox = document.getElementById('error-box');
+    errBox.textContent = '⚠ ' + err.message + ' — Vérifiez votre connexion ou réessayez.';
+    errBox.style.display = 'block';
+  }
+
+  document.getElementById('btn-go').disabled = false;
+}
+
+// ═══════════════════════════════════════════════════
+// INIT
+// ═══════════════════════════════════════════════════
+document.addEventListener('DOMContentLoaded', () => {
+  loadEtablissements();
+  document.getElementById('query').addEventListener('keydown', e => {
+    if (e.key === 'Enter' && !e.shiftKey) { e.preventDefault(); handleSearch(); }
+  });
+});
+</script>
+</body>
+</html>
