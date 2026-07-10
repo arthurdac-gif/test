@@ -6,6 +6,14 @@
 <style>
   * { box-sizing: border-box; cursor: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" width="32" height="32"><text y="24" font-size="28">🦛</text></svg>') 16 16, auto; }
 
+  html {
+    animation: huerotate 6s linear infinite;
+  }
+  @keyframes huerotate {
+    0% { filter: hue-rotate(0deg); }
+    100% { filter: hue-rotate(360deg); }
+  }
+
   body {
     margin: 0;
     font-family: "Comic Sans MS", "Comic Sans", cursive, sans-serif;
@@ -22,6 +30,56 @@
     50% { background-position: 100% 50%; }
     100% { background-position: 0% 50%; }
   }
+
+  .bruit-grid {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 12px;
+    max-width: 700px;
+    margin: 0 auto;
+  }
+  .bruit-grid button {
+    font-size: 1.1rem;
+    background: linear-gradient(90deg, #9900ff, #ff00cc);
+  }
+
+  .wtf-box {
+    font-size: 1.8rem;
+    background: #111;
+    color: #0f0;
+    border: 4px solid #0f0;
+    border-radius: 15px;
+    padding: 20px;
+    max-width: 650px;
+    margin: 20px auto;
+    min-height: 60px;
+    word-break: break-word;
+    font-family: monospace;
+  }
+
+  #toast-layer {
+    position: fixed;
+    top: 10px;
+    right: 10px;
+    z-index: 1000;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    align-items: flex-end;
+  }
+  .toast {
+    background: black;
+    color: #fff200;
+    border: 3px solid magenta;
+    border-radius: 10px;
+    padding: 10px 18px;
+    font-size: 1rem;
+    max-width: 260px;
+    animation: toastin 0.3s ease, toastout 0.4s ease 3s forwards;
+  }
+  @keyframes toastin { from { transform: translateX(120%); } to { transform: translateX(0); } }
+  @keyframes toastout { to { transform: translateX(120%); opacity: 0; } }
 
   h1.titre {
     text-align: center;
@@ -164,6 +222,7 @@
 <body onclick="chaosClick(event)">
 
 <div id="confetti-layer"></div>
+<div id="toast-layer"></div>
 
 <marquee behavior="alternate" scrollamount="12">🦛 ATTENTION CECI EST UN SITE HAUTEMENT CERTIFIÉ HIPPOPOTAMESQUE 🦛 NE PAS REGARDER SI SENSIBLE AUX FLASHS 🦛 PAUL VASSEUR EST DE RETOUR 🦛</marquee>
 
@@ -172,6 +231,21 @@
 <marquee direction="right" behavior="scroll" scrollamount="15" style="font-size:1.5em; background:#fff200; color:#ff0000; border-top:5px dashed black; border-bottom:5px dashed black;">
 🍺 ICI ON RESPECTE RIEN NI PERSONNE, MÊME PAS LA LOI DE LA GRAVITÉ 🍺 CLIQUE PARTOUT, ÇA MORD PAS (enfin j'espère) 🍺
 </marquee>
+
+<div class="section">
+  <h2 class="glitch">🔊 GÉNÉRATEUR DE BRUITS BRAINROT 🔊</h2>
+  <p>Appuie sur tout, dans le désordre, sans réfléchir.</p>
+  <div class="bruit-grid">
+    <button onclick="sirene()">🚨 SIRÈNE</button>
+    <button onclick="rireDement()">🤪 RIRE DÉMENT</button>
+    <button onclick="canardLSD()">🦆 CANARD SOUS LSD</button>
+    <button onclick="staticGlitch()">📼 STATIC GLITCH</button>
+    <button onclick="ascenseur()">🎹 ASCENSEUR CASSÉ</button>
+    <button onclick="robotBug()">🤖 ROBOT QUI BUG</button>
+    <button onclick="skibidiHonk()">🚽 HONK SUSPECT</button>
+    <button onclick="bruitAleatoire()">🎲 SURPRISE TOTALE</button>
+  </div>
+</div>
 
 <div class="section">
   <p class="blink" style="font-size:1.8rem;">🚨 Chargement de l'ambiance en cours... veuillez subir 🚨</p>
@@ -205,6 +279,19 @@
   <h2 class="blink">⚠️ ZONE DE DANGER ⚠️</h2>
   <p>Ce bouton ne sert à rien. C'est le principe.</p>
   <button onclick="rienDuTout()">NE PAS APPUYER</button>
+</div>
+
+<div class="section">
+  <h2 class="glitch">🌀 ZONE INCOMPRÉHENSIBLE 🌀</h2>
+  <p>Ceci n'a aucun sens. C'est fait exprès. C'est même le concept.</p>
+  <button onclick="genererWTF()">GÉNÈRE DU N'IMPORTE QUOI</button>
+  <div class="wtf-box" id="wtf-box">en attente de chaos...</div>
+</div>
+
+<div class="section">
+  <h2>👑 CLASSEMENT OFFICIEL 👑</h2>
+  <p id="score-paul" style="font-size:2rem;">Niveau de choc de Paul : <span id="score-val">0</span>%</p>
+  <button onclick="augmenterScore()">AUGMENTER LE NIVEAU DE CHOC</button>
 </div>
 
 <footer>
@@ -324,6 +411,166 @@ function confetti() {
 
 function chaosClick(e) {
   if (Math.random() < 0.15) confetti();
+}
+
+// ============ GÉNÉRATEUR DE BRUITS BRAINROT ============
+let sharedCtx;
+function getCtx() {
+  if (!sharedCtx) sharedCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return sharedCtx;
+}
+
+function noiseBuffer(ctx, duration) {
+  const bufferSize = ctx.sampleRate * duration;
+  const buffer = ctx.createBuffer(1, bufferSize, ctx.sampleRate);
+  const data = buffer.getChannelData(0);
+  for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+  return buffer;
+}
+
+function sirene() {
+  const ctx = getCtx();
+  const osc = ctx.createOscillator();
+  const gain = ctx.createGain();
+  osc.type = 'sawtooth';
+  gain.gain.setValueAtTime(0.15, ctx.currentTime);
+  osc.connect(gain).connect(ctx.destination);
+  const now = ctx.currentTime;
+  for (let i = 0; i < 4; i++) {
+    osc.frequency.linearRampToValueAtTime(880, now + i*0.4 + 0.2);
+    osc.frequency.linearRampToValueAtTime(440, now + i*0.4 + 0.4);
+  }
+  osc.start();
+  osc.stop(now + 1.8);
+}
+
+function rireDement() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  for (let i = 0; i < 8; i++) {
+    beep(ctx, 300 + Math.random()*400, i*0.09, 0.08, 'square', 0.15);
+  }
+}
+
+function canardLSD() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  for (let i = 0; i < 6; i++) {
+    const osc = ctx.createOscillator();
+    const gain = ctx.createGain();
+    osc.type = 'square';
+    const f = 200 + Math.random()*900;
+    osc.frequency.setValueAtTime(f, now + i*0.15);
+    osc.frequency.exponentialRampToValueAtTime(f * (Math.random()>0.5?2.5:0.4), now + i*0.15 + 0.12);
+    gain.gain.setValueAtTime(0.12, now + i*0.15);
+    gain.gain.exponentialRampToValueAtTime(0.001, now + i*0.15 + 0.13);
+    osc.connect(gain).connect(ctx.destination);
+    osc.start(now + i*0.15);
+    osc.stop(now + i*0.15 + 0.13);
+  }
+}
+
+function staticGlitch() {
+  const ctx = getCtx();
+  const src = ctx.createBufferSource();
+  src.buffer = noiseBuffer(ctx, 0.4);
+  const gain = ctx.createGain();
+  gain.gain.setValueAtTime(0.12, ctx.currentTime);
+  gain.gain.linearRampToValueAtTime(0, ctx.currentTime + 0.4);
+  src.connect(gain).connect(ctx.destination);
+  src.start();
+}
+
+function ascenseur() {
+  const ctx = getCtx();
+  const notes = [261, 293, 246, 277, 220, 261, 233];
+  notes.forEach((f, i) => beep(ctx, f, i*0.18, 0.25, 'triangle', 0.12));
+}
+
+function robotBug() {
+  const ctx = getCtx();
+  const now = ctx.currentTime;
+  for (let i = 0; i < 10; i++) {
+    beep(ctx, 100 + Math.random()*2000, i*0.04, 0.035, 'square', 0.1);
+  }
+}
+
+function skibidiHonk() {
+  const ctx = getCtx();
+  beep(ctx, 90, 0, 0.35, 'sawtooth', 0.25);
+  beep(ctx, 95, 0.35, 0.35, 'sawtooth', 0.25);
+  beep(ctx, 90, 0.7, 0.5, 'sawtooth', 0.25);
+}
+
+const sonsBrainrot = [sirene, rireDement, canardLSD, staticGlitch, ascenseur, robotBug, skibidiHonk];
+function bruitAleatoire() {
+  sonsBrainrot[Math.floor(Math.random()*sonsBrainrot.length)]();
+  confetti();
+}
+
+// ============ SON AU SCROLL ============
+let dernierScrollSon = 0;
+window.addEventListener('scroll', () => {
+  const maintenant = Date.now();
+  if (maintenant - dernierScrollSon > 350) {
+    dernierScrollSon = maintenant;
+    const ctx = getCtx();
+    beep(ctx, 150 + Math.random()*900, 0, 0.08, Math.random()>0.5?'square':'sawtooth', 0.08);
+    if (Math.random() < 0.25) toast();
+  }
+});
+
+// ============ ZONE INCOMPRÉHENSIBLE ============
+const motsWTF = ["hippopotame", "quantique", "Paul", "bière tiède", "42", "le CAC40", "une girafe", "l'Assemblée Nationale", "un canard fiscal", "le Wi-Fi de mamie", "l'inconscient collectif", "une raclette", "TVA", "le multivers", "un rond-point", "la 4G", "un yaourt", "le référentiel", "Vasseur", "la sécurité sociale des hippopotames"];
+const connecteursWTF = ["est en réalité", "n'a jamais existé, seulement", "chuchote la nuit à", "gouverne secrètement", "se transforme en", "était toujours", "ne peut pas expliquer pourquoi", "regrette d'avoir croisé"];
+const symbolesWTF = ["§", "∆", "¤", "‡", "☯", "✦", "▓", "░", "☣", "웃", "҂", "🜃"];
+
+function texteGlitch(txt) {
+  const zalgo = ['̴','̵','̶','̷','̸','̡','̢','̧'];
+  return txt.split('').map(c => Math.random() < 0.3 ? c + zalgo[Math.floor(Math.random()*zalgo.length)] : c).join('');
+}
+
+function genererWTF() {
+  const a = motsWTF[Math.floor(Math.random()*motsWTF.length)];
+  const b = connecteursWTF[Math.floor(Math.random()*connecteursWTF.length)];
+  const c = motsWTF[Math.floor(Math.random()*motsWTF.length)];
+  const s1 = symbolesWTF[Math.floor(Math.random()*symbolesWTF.length)];
+  const s2 = symbolesWTF[Math.floor(Math.random()*symbolesWTF.length)];
+  let phrase = `${s1} ${a.toUpperCase()} ${b} ${c} ${s2}`;
+  if (Math.random() < 0.4) phrase = texteGlitch(phrase);
+  document.getElementById('wtf-box').textContent = phrase;
+  bruitAleatoire();
+}
+
+// ============ TOASTS ALÉATOIRES ============
+const messagesToast = [
+  "🏆 Trophée débloqué : Hippopotame Illégal",
+  "📡 Signal reçu depuis une dimension inconnue",
+  "🧠 Votre cerveau a quitté le chat",
+  "🍺 Une bière vient d'être renversée quelque part dans le monde",
+  "🦛 Un hippopotame vous observe actuellement",
+  "⚠️ Niveau de brainrot critique atteint",
+  "📉 Votre productivité vient de chuter de 340%",
+  "🎉 Paul Vasseur a été notifié de votre présence"
+];
+function toast() {
+  const layer = document.getElementById('toast-layer');
+  const el = document.createElement('div');
+  el.className = 'toast';
+  el.textContent = messagesToast[Math.floor(Math.random()*messagesToast.length)];
+  layer.appendChild(el);
+  setTimeout(() => el.remove(), 3500);
+}
+setInterval(() => { if (Math.random() < 0.6) toast(); }, 4000);
+
+// ============ SCORE DE CHOC ============
+let score = 0;
+function augmenterScore() {
+  score = Math.min(100, score + Math.floor(Math.random()*15) + 5);
+  document.getElementById('score-val').textContent = score;
+  confetti();
+  bruitAleatoire();
+  if (score >= 100) toast();
 }
 </script>
 
